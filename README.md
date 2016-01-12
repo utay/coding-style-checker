@@ -1,3 +1,3 @@
 # Moulinette-de-norme-C
 
-ruby moulinetteC.rb <your C file>
+ruby moulinetteC.rb "your C file"
