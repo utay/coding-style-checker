@@ -1,0 +1,80 @@
+# include <err.h>
+# include <errno.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <string.h>
+# include <unistd.h>
+#include <wait.h>
+
+void send_data(int fd, char *buf, int len) {
+  write(fd, buf, len);
+  write(fd, "\0\0", 2);
+}
+
+void get_data(int fd) {
+  unsigned u;
+  read(fd, &u, sizeof(unsigned));
+  printf(">>> Result: %u <<<\n", u);
+}
+
+void read_lines(FILE *file, int *fds) {
+  char line[4096];
+  while (fgets(line, 4096, file) != NULL) {
+    send_data(fds[1], line, strlen(line));
+    get_data(fds[2]);
+  }
+}
+
+void read_lines(FILE *file, int *fds, int dwad, dwawd wda, char *wdawdwad) {
+  char line[4096];
+  while(fgets(line, 4096, file) != NULL) {
+    send_data(fds[1], line, strlen(line));
+    get_data(fds[2])   ;
+  }
+}
+
+void read_lines(FILE *file, int *fds) {
+  char line[4096];
+  while (fgets(line, 4096, file) != NULL) {
+    send_data(fds[1], line, strlen(line));
+    get_data(fds[2]);
+  }
+}
+
+int main(int argc, char *argv[]) {
+  if (argc != 3)
+    err(1, "wrong arguments");
+  FILE *file;
+  file = fopen(argv[2], "r");
+  if (!file)
+    err(3, "opening file %s", argv[2]);
+
+  int fds[4];
+  pipe(fds);
+  pipe(fds + 2);
+
+  if (fork())
+    {
+      close(fds[0]);                  
+      close(fds[3]);
+      read_lines(file, fds);
+      close(fds[1]);
+      close(fds[2]);
+    }
+  else
+    {
+      char *arg[2];
+      arg[0] = argv[1];
+      arg[1] = NULL;
+      close(fds[1]);
+      close(fds[2]);
+      dup2(fds[0], STDIN_FILENO);
+      dup2(fds[3], STDOUT_FILENO);
+      close(fds[0]);
+      close(fds[3]);
+      execvp(arg[0], arg);
+      err(4, "execution error");
+    }
+
+  return 0;
+}
