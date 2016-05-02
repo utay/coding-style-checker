@@ -1,3 +1,5 @@
-# Moulinette-de-norme-C
+# C coding style errors detector
 
-ruby moulinetteC.rb "your C file"
+## Usage
+
+```ruby moulinetteC.rb <C file>```
